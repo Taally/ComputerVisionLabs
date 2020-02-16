@@ -70,9 +70,145 @@ namespace Labs
             return bmp;
         }
 
-        public static Bitmap byFunction(Bitmap image)
+        private static int transformColor(int y, int min, int max)
         {
-            return image;
+            return Math.Min((y - min) * 255 / (max - min), 255);
+        }
+
+        private static Bitmap toGrayscale(Bitmap bmp)
+        {
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    int grey = (int)(0.2126 * pixel.R + 0.7152 * pixel.G + 0.0722 * pixel.B);
+                    bmp.SetPixel(x, y, Color.FromArgb(grey, grey, grey));
+                }
+            }
+            return bmp;
+        }
+
+        public static Bitmap linearCorrection(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
+            int[] r_hist = new int[256];
+            int[] g_hist = new int[256];
+            int[] b_hist = new int[256];
+
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y) {
+                    var pixel = bmp.GetPixel(x, y);
+                    r_hist[pixel.R] += 1;
+                    g_hist[pixel.G] += 1;
+                    b_hist[pixel.B] += 1;
+                }
+            }
+
+            int r_min = 0, r_max = 255;
+            int g_min = 0, g_max = 255;
+            int b_min = 0, b_max = 255;
+            
+            // red hist
+            for (int i = 0; i <= 255; ++i)
+            {
+                if (r_hist[i] != 0)
+                {
+                    r_min = i;
+                    break;
+                }
+            }
+            for (int i = 255; i >= 0; --i)
+            {
+                if (r_hist[i] != 0)
+                {
+                    r_max = i;
+                    break;
+                }
+            }
+
+            // green hist
+            for (int i = 0; i <= 255; ++i)
+            {
+                if (g_hist[i] != 0)
+                {
+                    g_min = i;
+                    break;
+                }
+            }
+            for (int i = 255; i >= 0; --i)
+            {
+                if (g_hist[i] != 0)
+                {
+                    g_max = i;
+                    break;
+                }
+            }
+
+            // blue hist
+            for (int i = 0; i <= 255; ++i)
+            {
+                if (b_hist[i] != 0)
+                {
+                    b_min = i;
+                    break;
+                }
+            }
+            for (int i = 255; i >= 0; --i)
+            {
+                if (b_hist[i] != 0)
+                {
+                    b_max = i;
+                    break;
+                }
+            }
+
+            // transform
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    bmp.SetPixel(x, y, Color.FromArgb(
+                        pixel.A,
+                        transformColor(pixel.R, r_min, r_max),
+                        transformColor(pixel.G, g_min, g_max),
+                        transformColor(pixel.B, b_min, b_max)
+                        ));
+                }
+            }
+            return bmp;
+        }
+
+        public static Bitmap gammaCorrection(Bitmap image, double gamma = 1)
+        {
+            Bitmap bmp = new Bitmap(image);
+            bmp = toGrayscale(bmp);
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var c = Math.Min((int)Math.Pow(pixel.R, gamma), 255);
+                    bmp.SetPixel(x, y, Color.FromArgb(c, c, c));
+                }
+            }
+            return bmp;
+        }
+
+        public static Bitmap histNorm(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
+
+            return bmp;
+        }
+
+        public static Bitmap histEq(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
+
+            return bmp;
         }
     }
 }

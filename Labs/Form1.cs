@@ -14,7 +14,9 @@ namespace Labs
     enum Type {
         refColor,
         grayWorld,
-        byFunction
+        byFunction,
+        histNorm,
+        histEq
     }
 
     public partial class Form1 : Form
@@ -30,8 +32,10 @@ namespace Labs
         {
             InitializeComponent();
             comboBox1.SelectedIndex = 1;
+            comboBoxFunction.SelectedIndex = 0;
             setElementsActive(false);
             activateRefColor(false);
+            activateByFunction(false);
         }
 
         private void setElementsActive(bool active = true)
@@ -40,18 +44,60 @@ namespace Labs
             comboBox1.Enabled = active;
         }
 
+        private void deactivateAll()
+        {
+            activateRefColor(false);
+            activateByFunction(false);
+            activateGreyWorld(false);
+            activateHistNorm(false);
+            activateHistEq(false);
+        }
+
         private void activateRefColor(bool active = true)
+        {            
+            if (active)
+            {
+                deactivateAll();                
+                this.srcColor = Color.Empty;
+                this.dstColor = Color.Empty;
+                this.current = Type.refColor;
+            }
+            panelRefColor.Visible = active;
+        }
+
+        private void activateGreyWorld(bool active = true)
         {
             if (active)
             {
-                this.srcColor = Color.Empty;
-                this.dstColor = Color.Empty;
+                deactivateAll();
+                this.current = Type.grayWorld;
             }
-            labelColorSelect.Visible = active;
-            buttonColorSelect.Visible = active;
-            pictureBoxSrcColor.Visible = active;
-            pictureBoxDstColor.Visible = active;
+        }
+        
+        private void activateByFunction(bool active = true)
+        {
+            if (active)
+            {
+                deactivateAll();
+                this.current = Type.byFunction;
+            }
+            panelFunctions.Visible = active;
+        }
 
+        private void activateHistNorm(bool active = true)
+        {
+            if (active)
+            {
+                deactivateAll();
+            }
+        }
+
+        private void activateHistEq(bool active = true)
+        {
+            if (active)
+            {
+                deactivateAll();
+            }
         }
 
         private void buttonLoad_Click(object sender, EventArgs e)
@@ -78,21 +124,23 @@ namespace Labs
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    this.current = Type.refColor;
                     activateRefColor();
                     checkColors();
                     break;
                 case 1:
-                    this.current = Type.grayWorld;
-                    activateRefColor(false);
+                    activateGreyWorld();
                     break;
                 case 2:
-                    this.current = Type.byFunction;
-                    activateRefColor(false);
+                    activateByFunction();
+                    break;
+                case 3:
+                    activateHistNorm();
+                    break;
+                case 4:
+                    activateHistEq();
                     break;
                 default:
-                    this.current = Type.grayWorld;
-                    activateRefColor(false);
+                    activateGreyWorld();
                     break;
             }
 
@@ -100,6 +148,7 @@ namespace Labs
 
         private void buttonExecute_Click(object sender, EventArgs e)
         {
+            pictureBoxProcessed.Image = null;
             switch (this.current)
             {
                 case Type.grayWorld:
@@ -109,12 +158,20 @@ namespace Labs
                     this.processedImage = DataHandler.refColor(this.originalImage, this.srcColor, this.dstColor);
                     break;
                 case Type.byFunction:
-                    this.processedImage = DataHandler.byFunction(this.originalImage);
+                    executeByFunction();
                     break;
+                case Type.histNorm:
+                    this.processedImage = DataHandler.histNorm(this.originalImage);
+                    break;
+                case Type.histEq:
+                    this.processedImage = DataHandler.histEq(this.originalImage);
+                    break;
+
             }
             pictureBoxProcessed.Image = this.processedImage;
         }
 
+        // --- Опорный цвет --- //
         private void setColorToPictureBox(Color c, PictureBox pb)
         {
             var bmp = new Bitmap(pb.Width, pb.Height);
@@ -137,7 +194,7 @@ namespace Labs
 
         private void pictureBoxOriginal_MouseClick(object sender, MouseEventArgs e)
         {
-            if (pictureBoxSrcColor.Visible)
+            if (panelRefColor.Visible)
             {
                 Bitmap bmp = new Bitmap(pictureBoxOriginal.ClientSize.Width, pictureBoxOriginal.ClientSize.Height);
                 pictureBoxOriginal.DrawToBitmap(bmp, pictureBoxOriginal.ClientRectangle);
@@ -156,6 +213,66 @@ namespace Labs
                 setColorToPictureBox(this.dstColor, pictureBoxDstColor);
                 checkColors();
             }
+        }
+
+        // --- Функции преобразования --- //
+        private void executeByFunction()
+        {
+            switch (comboBoxFunction.SelectedIndex)
+            {
+                case 0:
+                    this.processedImage = DataHandler.linearCorrection(this.originalImage);
+                    break;
+                case 1:
+                    this.processedImage = DataHandler.gammaCorrection(this.originalImage, trackBarGamma.Value / 100.0);
+                    break;
+            }
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "JPeg Image|*.jpg|Bitmap Image|*.bmp";
+            if (this.processedImage != null)
+            {
+                saveFileDialog1.Title = "Save";
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    if (saveFileDialog1.FileName != "")
+                    {
+                        this.processedImage.Save(saveFileDialog1.FileName);
+                    }
+                }
+            }
+        }
+
+        private void setTrackbarVisibitily(bool visible = true)
+        {
+            trackBarGamma.Visible = visible;
+            label3.Visible = visible;
+            label4.Visible = visible;
+            label6.Visible = visible;
+            labelGamma.Visible = visible;
+        }
+
+        private void comboBoxFunction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBoxFunction.SelectedIndex)
+            {
+                case 0:
+                    setTrackbarVisibitily(false);
+                    break;
+                case 1:
+                    setTrackbarVisibitily(true);
+                    break;
+                default:
+                    setTrackbarVisibitily(false);
+                    break;
+            }
+        }
+
+        private void trackBarGamma_Scroll(object sender, EventArgs e)
+        {
+            labelGamma.Text = "Gamma = " + trackBarGamma.Value / 100.0;
         }
     }
 }
