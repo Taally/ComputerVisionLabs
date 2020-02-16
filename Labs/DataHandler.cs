@@ -201,12 +201,100 @@ namespace Labs
         {
             Bitmap bmp = new Bitmap(image);
 
+            double[] r = new double[256];
+            double[] g = new double[256];
+            double[] b = new double[256];
+
+            // построение гистограмм
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    r[pixel.R] += 1;
+                    g[pixel.G] += 1;
+                    b[pixel.B] += 1;
+                }
+            }
+
+            // нормирование гистограммы
+            int N = bmp.Width * bmp.Height;
+            for (int i = 0; i < 256; ++i)
+            {
+                r[i] /= N * 1.0;
+                g[i] /= N * 1.0;
+                b[i] /= N * 1.0;
+            }
+
+            // равномерное распределение значений
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    bmp.SetPixel(x, y, Color.FromArgb(
+                        pixel.A,
+                        (int)Math.Round(r[pixel.R] * 255),
+                        (int)Math.Round(g[pixel.G] * 255),
+                        (int)Math.Round(b[pixel.B] * 255)
+                        ));
+                }
+            }
+
             return bmp;
         }
 
         public static Bitmap histEq(Bitmap image)
         {
             Bitmap bmp = new Bitmap(image);
+
+            double[] r = new double[256];
+            double[] g = new double[256];
+            double[] b = new double[256];
+            
+            // построение гистограмм
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    r[pixel.R] += 1;
+                    g[pixel.G] += 1;
+                    b[pixel.B] += 1;
+                }
+            }
+
+            // нормирование гистограммы
+            int N = bmp.Width * bmp.Height;
+            for (int i = 0; i < 256; ++i)
+            {
+                r[i] /= N * 1.0;
+                g[i] /= N * 1.0;
+                b[i] /= N * 1.0;
+            }
+
+            // построение гистограммы с накоплением
+            for (int i = 1; i < 256; ++i)
+            {
+                r[i] = r[i - 1] + r[i];
+                g[i] = g[i - 1] + g[i];
+                b[i] = b[i - 1] + b[i];
+            }
+
+            // равномерное распределение значений
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    bmp.SetPixel(x, y, Color.FromArgb(
+                        pixel.A,
+                        (int)Math.Round(r[pixel.R] * 255),
+                        (int)Math.Round(g[pixel.G] * 255),
+                        (int)Math.Round(b[pixel.B] * 255)
+                        ));
+                }
+            }
 
             return bmp;
         }

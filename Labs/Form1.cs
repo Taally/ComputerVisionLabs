@@ -89,6 +89,7 @@ namespace Labs
             if (active)
             {
                 deactivateAll();
+                this.current = Type.histNorm;
             }
         }
 
@@ -97,6 +98,7 @@ namespace Labs
             if (active)
             {
                 deactivateAll();
+                this.current = Type.histEq;
             }
         }
 
