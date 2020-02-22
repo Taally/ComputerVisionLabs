@@ -75,7 +75,7 @@ namespace Labs
             return Math.Min((y - min) * 255 / (max - min), 255);
         }
 
-        private static Bitmap toGrayscale(Bitmap bmp)
+        public static Bitmap toGrayscale(Bitmap bmp)
         {
             for (int x = 0; x < bmp.Width; ++x)
             {
@@ -190,8 +190,10 @@ namespace Labs
                 for (int y = 0; y < bmp.Height; ++y)
                 {
                     var pixel = bmp.GetPixel(x, y);
-                    var c = Math.Min((int)Math.Pow(pixel.R, gamma), 255);
-                    bmp.SetPixel(x, y, Color.FromArgb(c, c, c));
+                    var c = pixel.R / 255.0;
+                    c = Math.Pow(c, 1.0 / gamma);
+                    c *= 255;
+                    bmp.SetPixel(x, y, Color.FromArgb((int)c, (int)c, (int)c));
                 }
             }
             return bmp;
@@ -293,6 +295,37 @@ namespace Labs
                         (int)Math.Round(g[pixel.G] * 255),
                         (int)Math.Round(b[pixel.B] * 255)
                         ));
+                }
+            }
+
+            return bmp;
+        }
+
+        public static Bitmap quantization(Bitmap image, int levelCnt)
+        {
+            int cntPerLevel = 256 / levelCnt;
+            int[] means = new int[levelCnt];
+            for (int i = 0; i < levelCnt; ++i)
+            {
+                int start = i * cntPerLevel;
+                int end = start + cntPerLevel;
+                means[i] = (start + end) / 2;
+            }
+
+            Bitmap bmp = new Bitmap(image);
+            bmp = toGrayscale(bmp);
+
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    int level = pixel.R / cntPerLevel;
+                    if (level >= levelCnt)
+                    {
+                        level = levelCnt - 1;
+                    }
+                    bmp.SetPixel(x, y, Color.FromArgb(pixel.A, means[level], means[level], means[level]));
                 }
             }
 
