@@ -501,16 +501,133 @@ namespace Labs
             return bmp;
         }
 
+        private static void divideImage(
+            Bitmap image, 
+            out Bitmap bmp1, 
+            out Bitmap bmp2, 
+            out bool byWidth
+            )
+        {
+            int width, height, x1, y1, x2, y2;
+            if (image.Width > image.Height)
+            {
+                byWidth = true;
+                width = image.Width / 2;
+                height = image.Height;
+
+                x1 = 0;
+                y1 = 0;
+                x2 = width;
+                y2 = 0;
+            }
+            // divide by height
+            else
+            {
+                byWidth = false;
+                width = image.Width;
+                height = image.Height / 2;
+
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = height;
+            }
+            Rectangle rect1 = new Rectangle(x1, y1, width, height);
+            Rectangle rect2 = new Rectangle(x2, y2, width, height);
+
+            bmp1 = new Bitmap(rect1.Width, rect1.Height);
+            Graphics g = Graphics.FromImage(bmp1);
+            g.DrawImage(image, new Rectangle(0, 0, bmp1.Width, bmp1.Height), rect1, GraphicsUnit.Pixel);
+
+            bmp2 = new Bitmap(rect2.Width, rect2.Height);
+            Graphics g2 = Graphics.FromImage(bmp2);
+            g2.DrawImage(image, new Rectangle(0, 0, bmp2.Width, bmp2.Height), rect2, GraphicsUnit.Pixel);
+        }
+
+        private static bool canDivide(int width, int height, int minSize)
+        {
+            if (width > height)
+            {
+                return (width / 2) >= minSize;
+            } else
+            {
+                return (height / 2) >= minSize;
+            }
+        }
+
+        private static Bitmap combineImages(Bitmap bmp1, Bitmap bmp2, bool byWidth)
+        {
+            int width, height, x2, y2;
+            if (byWidth)
+            {
+                width = bmp1.Width + bmp2.Width;
+                height = bmp1.Height;
+                x2 = bmp1.Width;
+                y2 = 0;
+            } else
+            {
+                width = bmp1.Width;
+                height = bmp1.Height + bmp2.Height;
+                x2 = 0;
+                y2 = bmp1.Height;
+            }
+            Bitmap res = new Bitmap(width, height);
+            Rectangle rect1 = new Rectangle(0, 0, bmp1.Width, bmp1.Height);
+            Rectangle rect2 = new Rectangle(x2, y2, bmp2.Width, bmp2.Height);
+
+            Graphics g = Graphics.FromImage(res);
+            g.DrawImage(bmp1, rect1, new Rectangle(0, 0, bmp1.Width, bmp1.Height), GraphicsUnit.Pixel);
+            g.DrawImage(bmp2, rect2, new Rectangle(0, 0, bmp2.Width, bmp2.Height), GraphicsUnit.Pixel);
+
+            return res;
+        }
+
+
         public static Bitmap OtsuLocal(Bitmap image)
         {
-            Bitmap bmp = new Bitmap(image);
+            //Bitmap bmp = new Bitmap(image);
+
+            Bitmap bmp1, bmp2;
+            bool byWidth;
+            divideImage(image, out bmp1, out bmp2, out byWidth);
+
+            bmp1 = OtsuGlobal(bmp1);
+            bmp2 = OtsuGlobal(bmp2);
+
+            Bitmap bmp = combineImages(bmp1, bmp2, byWidth);      
             return bmp;
         }
 
-        public static Bitmap OtsuHierarchy(Bitmap image)
+        public static Bitmap OtsuHierarchy(Bitmap image, int minSize)
         {
-            Bitmap bmp = new Bitmap(image);
+            Bitmap bmp1, bmp2;
+            bool byWidth;
+            divideImage(image, out bmp1, out bmp2, out byWidth);
+
+            if (bmp1.Width <= minSize || bmp1.Height <= minSize)
+            {
+                bmp1 = OtsuGlobal(bmp1);
+            } else
+            {
+                bmp1 = OtsuHierarchy(bmp1, minSize);
+            }
+            if (bmp2.Width <= minSize || bmp2.Height <= minSize)
+            {
+                bmp2 = OtsuGlobal(bmp2);
+            }
+            else
+            {
+                bmp2 = OtsuHierarchy(bmp2, minSize);
+            }
+
+            Bitmap bmp = combineImages(bmp1, bmp2, byWidth);
             return bmp;
         }
+
+        //public static Bitmap OtsuHierarchy(Bitmap image, int minSize)
+        //{
+        //    Bitmap bmp = new Bitmap(image);
+        //    return bmp;
+        //}
     }
 }

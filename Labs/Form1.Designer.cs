@@ -66,6 +66,10 @@
             this.radioButtonRange = new System.Windows.Forms.RadioButton();
             this.trackBarBin2 = new System.Windows.Forms.TrackBar();
             this.labelBin2 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.panelBinHier = new System.Windows.Forms.Panel();
+            this.numericUpDownFragSize = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSrcColor)).BeginInit();
@@ -79,6 +83,8 @@
             this.panelBin1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBin1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBin2)).BeginInit();
+            this.panelBinHier.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFragSize)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxOriginal
@@ -335,6 +341,7 @@
             // 
             // panelBinarization
             // 
+            this.panelBinarization.Controls.Add(this.panelBinHier);
             this.panelBinarization.Controls.Add(this.panelBin1);
             this.panelBinarization.Controls.Add(this.comboBoxBinarization);
             this.panelBinarization.Location = new System.Drawing.Point(409, 371);
@@ -457,6 +464,56 @@
             this.labelBin2.TabIndex = 8;
             this.labelBin2.Text = "- 127";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 3);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(180, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Минимальный размер фрагмента";
+            // 
+            // panelBinHier
+            // 
+            this.panelBinHier.Controls.Add(this.label9);
+            this.panelBinHier.Controls.Add(this.numericUpDownFragSize);
+            this.panelBinHier.Controls.Add(this.label8);
+            this.panelBinHier.Location = new System.Drawing.Point(4, 30);
+            this.panelBinHier.Name = "panelBinHier";
+            this.panelBinHier.Size = new System.Drawing.Size(229, 100);
+            this.panelBinHier.TabIndex = 9;
+            // 
+            // numericUpDownFragSize
+            // 
+            this.numericUpDownFragSize.Location = new System.Drawing.Point(6, 37);
+            this.numericUpDownFragSize.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDownFragSize.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownFragSize.Name = "numericUpDownFragSize";
+            this.numericUpDownFragSize.Size = new System.Drawing.Size(98, 20);
+            this.numericUpDownFragSize.TabIndex = 2;
+            this.numericUpDownFragSize.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 16);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(69, 13);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "(в пикселях)";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -492,6 +549,9 @@
             this.panelBin1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBin1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBin2)).EndInit();
+            this.panelBinHier.ResumeLayout(false);
+            this.panelBinHier.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFragSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -537,6 +597,10 @@
         private System.Windows.Forms.TrackBar trackBarBin2;
         private System.Windows.Forms.RadioButton radioButtonRange;
         private System.Windows.Forms.Label labelBin2;
+        private System.Windows.Forms.Panel panelBinHier;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown numericUpDownFragSize;
+        private System.Windows.Forms.Label label9;
     }
 }
 

@@ -40,7 +40,7 @@ namespace Labs
             setElementsActive(false);
             activateRefColor(false);
             activateByFunction(false);
-            //panelBin1.Visible = false;
+            panelBinHier.Visible = false;
             labelBin2.Visible = false;
             trackBarBin2.Visible = false;
         }
@@ -366,7 +366,7 @@ namespace Labs
                     this.processedImage = DataHandler.OtsuLocal(this.originalImage);
                     break;
                 case 3:
-                    this.processedImage = DataHandler.OtsuHierarchy(this.originalImage);
+                    this.processedImage = DataHandler.OtsuHierarchy(this.originalImage, (int)numericUpDownFragSize.Value);
                     break;
                 default: break;
             }
@@ -378,23 +378,23 @@ namespace Labs
             {
                 case 0:
                     panelBin1.Visible = true;
-
+                    panelBinHier.Visible = false;
                     break;
                 case 1:
                     panelBin1.Visible = false;
-
+                    panelBinHier.Visible = false;
                     break;
                 case 2:
                     panelBin1.Visible = false;
-
+                    panelBinHier.Visible = false;
                     break;
                 case 3:
                     panelBin1.Visible = false;
-
+                    panelBinHier.Visible = true;
                     break;
                 default:
                     panelBin1.Visible = false;
-
+                    panelBinHier.Visible = false;
                     break;
             }
         }
