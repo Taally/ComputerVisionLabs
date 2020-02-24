@@ -212,7 +212,7 @@
             this.panelFunctions.Controls.Add(this.comboBoxFunction);
             this.panelFunctions.Location = new System.Drawing.Point(83, 401);
             this.panelFunctions.Name = "panelFunctions";
-            this.panelFunctions.Size = new System.Drawing.Size(306, 111);
+            this.panelFunctions.Size = new System.Drawing.Size(306, 159);
             this.panelFunctions.TabIndex = 12;
             // 
             // labelGamma
@@ -291,7 +291,7 @@
             this.panelQuant.Controls.Add(this.trackBarLevels);
             this.panelQuant.Location = new System.Drawing.Point(104, 401);
             this.panelQuant.Name = "panelQuant";
-            this.panelQuant.Size = new System.Drawing.Size(282, 108);
+            this.panelQuant.Size = new System.Drawing.Size(282, 154);
             this.panelQuant.TabIndex = 1;
             // 
             // labelLevels
@@ -349,6 +349,7 @@
             "Глобальная",
             "Локальная",
             "Иерархическая"});
+            this.comboBoxBinarization.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxBinarization.FormattingEnabled = true;
             this.comboBoxBinarization.Items.AddRange(new object[] {
             "Выбор порога",
@@ -460,7 +461,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(780, 562);
+            this.ClientSize = new System.Drawing.Size(780, 560);
             this.Controls.Add(this.panelQuant);
             this.Controls.Add(this.panelBinarization);
             this.Controls.Add(this.buttonSave);

@@ -359,7 +359,15 @@ namespace Labs
                         this.processedImage = DataHandler.binarizationWithRange(this.originalImage, trackBarBin1.Value, trackBarBin2.Value);
                     }
                     break;
-                
+                case 1:
+                    this.processedImage = DataHandler.OtsuGlobal(this.originalImage);
+                    break;
+                case 2:
+                    this.processedImage = DataHandler.OtsuLocal(this.originalImage);
+                    break;
+                case 3:
+                    this.processedImage = DataHandler.OtsuHierarchy(this.originalImage);
+                    break;
                 default: break;
             }
         }

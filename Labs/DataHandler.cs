@@ -357,10 +357,10 @@ namespace Labs
 
                     if (g < threshold)
                     {
-                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, c1));
+                        bmp.SetPixel(x, y, c1);
                     } else
                     {
-                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, c2));
+                        bmp.SetPixel(x, y, c2);
                     }
                 }
             }
@@ -379,14 +379,137 @@ namespace Labs
 
                     if (threshold1 <= g && g < threshold2)
                     {
-                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, Color.White));
+                        bmp.SetPixel(x, y, Color.White);
                     }
                     else
                     {
-                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, Color.Black));
+                        bmp.SetPixel(x, y, Color.Black);
                     }
                 }
             }
+            return bmp;
+        }
+
+        private static int[] getGrayscaleHist(Bitmap bmp)
+        {
+            int[] hist = new int[256];
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var g = getGrayScale(pixel.R, pixel.G, pixel.B);
+                    hist[g] += 1;
+                }
+            }
+            return hist;
+        }
+
+        private static int Otsu1(int[] hist)
+        {
+            int intensitySum = 0;
+            double m = 0;
+            for (int i = 0; i < 256; ++i)
+            {
+                m += hist[i];
+                intensitySum += hist[i] * i;
+            }
+            m /= intensitySum;
+
+            int q1 = hist[0], q2 = 0;
+            double m1 = 0, m2 = 0;
+
+            int t = 0;
+            double max = 0;
+            for (int i = 1; i < 256; ++i)
+            {
+                q2 = q1 + hist[i];
+                m1 = (q1 * m1 + i * hist[i]) / q2;
+                m2 = (m - q2 * m1) / (1 - q2);
+                q1 = q2;
+                double disp = q1 * (1 - q1) * (m1 - m2) * (m1 - m2);
+                if (disp > max)
+                {
+                    max = disp;
+                    t = i;
+                }
+            }
+            
+            return t;
+        }
+
+        private static int Otsu(int[] hist)
+        {
+            int allPixelCnt = 0;
+            int allIntensitySum = 0;
+            for (int i = 0; i < 256; ++i)
+            {
+                allPixelCnt += hist[i];
+                allIntensitySum += i * hist[i];
+            }
+
+            int t = 0;
+            double maxSigma = 0;
+            
+            int pixelCnt = 0;
+            int intensitySum = 0;
+
+            for (int i = 0; i < 255; ++i)
+            {
+                pixelCnt += hist[i];
+                intensitySum += i * hist[i];
+
+                double prob = pixelCnt / (double)allPixelCnt;
+
+                double mean1 = intensitySum / (double)pixelCnt;
+                double mean2 = (allIntensitySum - intensitySum) 
+                    / (double)(allPixelCnt - pixelCnt);
+                
+                double sigma = prob * (1.0 - prob) * (mean1 - mean2) * (mean1 - mean2);
+
+                if (sigma > maxSigma)
+                {
+                    maxSigma = sigma;
+                    t = i;
+                }
+            }
+            return t;
+        }
+
+        public static Bitmap OtsuGlobal(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
+            var hist = getGrayscaleHist(image);
+            var t = Otsu(hist);
+
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var g = getGrayScale(pixel.R, pixel.G, pixel.B);
+                    if (g > t)
+                    {
+                        bmp.SetPixel(x, y, Color.White);
+                    } else
+                    {
+                        bmp.SetPixel(x, y, Color.Black);
+                    }
+                }
+            }
+
+            return bmp;
+        }
+
+        public static Bitmap OtsuLocal(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
+            return bmp;
+        }
+
+        public static Bitmap OtsuHierarchy(Bitmap image)
+        {
+            Bitmap bmp = new Bitmap(image);
             return bmp;
         }
     }
