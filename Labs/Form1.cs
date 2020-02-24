@@ -36,9 +36,13 @@ namespace Labs
             InitializeComponent();
             comboBox1.SelectedIndex = 1;
             comboBoxFunction.SelectedIndex = 0;
+            comboBoxBinarization.SelectedIndex = 0;
             setElementsActive(false);
             activateRefColor(false);
             activateByFunction(false);
+            //panelBin1.Visible = false;
+            labelBin2.Visible = false;
+            trackBarBin2.Visible = false;
         }
 
         private void setElementsActive(bool active = true)
@@ -194,6 +198,7 @@ namespace Labs
 
         }
 
+        // --- Execute button ---//
         private void buttonExecute_Click(object sender, EventArgs e)
         {
             pictureBoxProcessed.Image = null;
@@ -219,6 +224,9 @@ namespace Labs
                     break;
                 case Type.quantization:
                     this.processedImage = DataHandler.quantization(this.originalImage, trackBarLevels.Value);
+                    break;
+                case Type.binarization:
+                    executeBinarization();
                     break;
 
             }
@@ -341,7 +349,69 @@ namespace Labs
         // --- Binarization --- //
         private void executeBinarization()
         {
-            
+            switch (comboBoxBinarization.SelectedIndex)
+            {
+                case 0:
+                    if (!radioButtonRange.Checked) {
+                        this.processedImage = DataHandler.binarizationWithThreshold(this.originalImage, trackBarBin1.Value, radioButtonBinTop.Checked);
+                    } else
+                    {
+                        this.processedImage = DataHandler.binarizationWithRange(this.originalImage, trackBarBin1.Value, trackBarBin2.Value);
+                    }
+                    break;
+                
+                default: break;
+            }
+        }
+
+        private void comboBoxBinarization_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBoxBinarization.SelectedIndex)
+            {
+                case 0:
+                    panelBin1.Visible = true;
+
+                    break;
+                case 1:
+                    panelBin1.Visible = false;
+
+                    break;
+                case 2:
+                    panelBin1.Visible = false;
+
+                    break;
+                case 3:
+                    panelBin1.Visible = false;
+
+                    break;
+                default:
+                    panelBin1.Visible = false;
+
+                    break;
+            }
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            labelBin2.Text = "- " + trackBarBin2.Value.ToString();
+        }
+
+        private void radioButtonRange_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonRange.Checked)
+            {
+                trackBarBin2.Visible = true;
+                labelBin2.Visible = true;
+            } else
+            {
+                trackBarBin2.Visible = false;
+                labelBin2.Visible = false;
+            }
+        }
+
+        private void trackBarBin1_Scroll(object sender, EventArgs e)
+        {
+            labelBin1.Text = trackBarBin1.Value.ToString();
         }
     }
 }

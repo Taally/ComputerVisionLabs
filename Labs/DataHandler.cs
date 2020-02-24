@@ -75,6 +75,11 @@ namespace Labs
             return Math.Min((y - min) * 255 / (max - min), 255);
         }
 
+        public static int getGrayScale(int r, int g, int b)
+        {
+            return (int)(0.2126 * r + 0.7152 * g + 0.0722 * b);
+        }
+
         public static Bitmap toGrayscale(Bitmap bmp)
         {
             for (int x = 0; x < bmp.Width; ++x)
@@ -329,6 +334,59 @@ namespace Labs
                 }
             }
 
+            return bmp;
+        }
+
+        public static Bitmap binarizationWithThreshold(Bitmap image, int threshold, bool upper)
+        {
+            Color c1 = Color.White;
+            Color c2 = Color.Black;
+            if (!upper)
+            {
+                c1 = Color.Black;
+                c2 = Color.White;
+            }
+
+            Bitmap bmp = new Bitmap(image);
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var g = getGrayScale(pixel.R, pixel.G, pixel.B);
+
+                    if (g < threshold)
+                    {
+                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, c1));
+                    } else
+                    {
+                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, c2));
+                    }
+                }
+            }
+            return bmp;
+        }
+
+        public static Bitmap binarizationWithRange(Bitmap image, int threshold1, int threshold2)
+        {
+            Bitmap bmp = new Bitmap(image);
+            for (int x = 0; x < bmp.Width; ++x)
+            {
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var g = getGrayScale(pixel.R, pixel.G, pixel.B);
+
+                    if (threshold1 <= g && g < threshold2)
+                    {
+                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, Color.White));
+                    }
+                    else
+                    {
+                        bmp.SetPixel(x, y, Color.FromArgb(pixel.A, Color.Black));
+                    }
+                }
+            }
             return bmp;
         }
     }

@@ -57,6 +57,15 @@
             this.buttonSave = new System.Windows.Forms.Button();
             this.panelBinarization = new System.Windows.Forms.Panel();
             this.comboBoxBinarization = new System.Windows.Forms.ComboBox();
+            this.panelBin1 = new System.Windows.Forms.Panel();
+            this.trackBarBin1 = new System.Windows.Forms.TrackBar();
+            this.label7 = new System.Windows.Forms.Label();
+            this.labelBin1 = new System.Windows.Forms.Label();
+            this.radioButtonBinTop = new System.Windows.Forms.RadioButton();
+            this.radioButtonBinBottom = new System.Windows.Forms.RadioButton();
+            this.radioButtonRange = new System.Windows.Forms.RadioButton();
+            this.trackBarBin2 = new System.Windows.Forms.TrackBar();
+            this.labelBin2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSrcColor)).BeginInit();
@@ -67,6 +76,9 @@
             this.panelQuant.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarLevels)).BeginInit();
             this.panelBinarization.SuspendLayout();
+            this.panelBin1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarBin1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarBin2)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxOriginal
@@ -323,10 +335,11 @@
             // 
             // panelBinarization
             // 
+            this.panelBinarization.Controls.Add(this.panelBin1);
             this.panelBinarization.Controls.Add(this.comboBoxBinarization);
             this.panelBinarization.Location = new System.Drawing.Point(409, 371);
             this.panelBinarization.Name = "panelBinarization";
-            this.panelBinarization.Size = new System.Drawing.Size(269, 141);
+            this.panelBinarization.Size = new System.Drawing.Size(269, 189);
             this.panelBinarization.TabIndex = 14;
             // 
             // comboBoxBinarization
@@ -344,14 +357,110 @@
             "Метод Оцу (иерархическая)"});
             this.comboBoxBinarization.Location = new System.Drawing.Point(4, 4);
             this.comboBoxBinarization.Name = "comboBoxBinarization";
-            this.comboBoxBinarization.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxBinarization.Size = new System.Drawing.Size(196, 21);
             this.comboBoxBinarization.TabIndex = 0;
+            this.comboBoxBinarization.SelectedIndexChanged += new System.EventHandler(this.comboBoxBinarization_SelectedIndexChanged);
+            // 
+            // panelBin1
+            // 
+            this.panelBin1.Controls.Add(this.labelBin2);
+            this.panelBin1.Controls.Add(this.trackBarBin2);
+            this.panelBin1.Controls.Add(this.radioButtonRange);
+            this.panelBin1.Controls.Add(this.radioButtonBinBottom);
+            this.panelBin1.Controls.Add(this.radioButtonBinTop);
+            this.panelBin1.Controls.Add(this.labelBin1);
+            this.panelBin1.Controls.Add(this.label7);
+            this.panelBin1.Controls.Add(this.trackBarBin1);
+            this.panelBin1.Location = new System.Drawing.Point(4, 30);
+            this.panelBin1.Name = "panelBin1";
+            this.panelBin1.Size = new System.Drawing.Size(235, 156);
+            this.panelBin1.TabIndex = 1;
+            // 
+            // trackBarBin1
+            // 
+            this.trackBarBin1.Location = new System.Drawing.Point(3, 26);
+            this.trackBarBin1.Maximum = 255;
+            this.trackBarBin1.Name = "trackBarBin1";
+            this.trackBarBin1.Size = new System.Drawing.Size(193, 45);
+            this.trackBarBin1.TabIndex = 3;
+            this.trackBarBin1.Value = 127;
+            this.trackBarBin1.Scroll += new System.EventHandler(this.trackBarBin1_Scroll);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 6);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(110, 13);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Порог бинаризации:";
+            // 
+            // labelBin1
+            // 
+            this.labelBin1.AutoSize = true;
+            this.labelBin1.Location = new System.Drawing.Point(124, 6);
+            this.labelBin1.Name = "labelBin1";
+            this.labelBin1.Size = new System.Drawing.Size(25, 13);
+            this.labelBin1.TabIndex = 3;
+            this.labelBin1.Text = "127";
+            // 
+            // radioButtonBinTop
+            // 
+            this.radioButtonBinTop.AutoSize = true;
+            this.radioButtonBinTop.Checked = true;
+            this.radioButtonBinTop.Location = new System.Drawing.Point(11, 114);
+            this.radioButtonBinTop.Name = "radioButtonBinTop";
+            this.radioButtonBinTop.Size = new System.Drawing.Size(67, 17);
+            this.radioButtonBinTop.TabIndex = 4;
+            this.radioButtonBinTop.TabStop = true;
+            this.radioButtonBinTop.Text = "Верхняя";
+            this.radioButtonBinTop.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonBinBottom
+            // 
+            this.radioButtonBinBottom.AutoSize = true;
+            this.radioButtonBinBottom.Location = new System.Drawing.Point(11, 137);
+            this.radioButtonBinBottom.Name = "radioButtonBinBottom";
+            this.radioButtonBinBottom.Size = new System.Drawing.Size(65, 17);
+            this.radioButtonBinBottom.TabIndex = 5;
+            this.radioButtonBinBottom.Text = "Нижняя";
+            this.radioButtonBinBottom.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonRange
+            // 
+            this.radioButtonRange.AutoSize = true;
+            this.radioButtonRange.Location = new System.Drawing.Point(84, 114);
+            this.radioButtonRange.Name = "radioButtonRange";
+            this.radioButtonRange.Size = new System.Drawing.Size(76, 17);
+            this.radioButtonRange.TabIndex = 6;
+            this.radioButtonRange.Text = "Диапазон";
+            this.radioButtonRange.UseVisualStyleBackColor = true;
+            this.radioButtonRange.CheckedChanged += new System.EventHandler(this.radioButtonRange_CheckedChanged);
+            // 
+            // trackBarBin2
+            // 
+            this.trackBarBin2.Location = new System.Drawing.Point(3, 63);
+            this.trackBarBin2.Maximum = 255;
+            this.trackBarBin2.Name = "trackBarBin2";
+            this.trackBarBin2.Size = new System.Drawing.Size(193, 45);
+            this.trackBarBin2.TabIndex = 7;
+            this.trackBarBin2.Value = 127;
+            this.trackBarBin2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            // 
+            // labelBin2
+            // 
+            this.labelBin2.AutoSize = true;
+            this.labelBin2.Location = new System.Drawing.Point(155, 6);
+            this.labelBin2.Name = "labelBin2";
+            this.labelBin2.Size = new System.Drawing.Size(31, 13);
+            this.labelBin2.TabIndex = 8;
+            this.labelBin2.Text = "- 127";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(780, 527);
+            this.ClientSize = new System.Drawing.Size(780, 562);
             this.Controls.Add(this.panelQuant);
             this.Controls.Add(this.panelBinarization);
             this.Controls.Add(this.buttonSave);
@@ -378,6 +487,10 @@
             this.panelQuant.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarLevels)).EndInit();
             this.panelBinarization.ResumeLayout(false);
+            this.panelBin1.ResumeLayout(false);
+            this.panelBin1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarBin1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarBin2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -414,6 +527,15 @@
         private System.Windows.Forms.Label labelLevels;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TrackBar trackBarLevels;
+        private System.Windows.Forms.Panel panelBin1;
+        private System.Windows.Forms.RadioButton radioButtonBinBottom;
+        private System.Windows.Forms.RadioButton radioButtonBinTop;
+        private System.Windows.Forms.Label labelBin1;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TrackBar trackBarBin1;
+        private System.Windows.Forms.TrackBar trackBarBin2;
+        private System.Windows.Forms.RadioButton radioButtonRange;
+        private System.Windows.Forms.Label labelBin2;
     }
 }
 
