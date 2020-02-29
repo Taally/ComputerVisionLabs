@@ -544,17 +544,6 @@ namespace Labs
             g2.DrawImage(image, new Rectangle(0, 0, bmp2.Width, bmp2.Height), rect2, GraphicsUnit.Pixel);
         }
 
-        private static bool canDivide(int width, int height, int minSize)
-        {
-            if (width > height)
-            {
-                return (width / 2) >= minSize;
-            } else
-            {
-                return (height / 2) >= minSize;
-            }
-        }
-
         private static Bitmap combineImages(Bitmap bmp1, Bitmap bmp2, bool byWidth)
         {
             int width, height, x2, y2;
@@ -600,34 +589,84 @@ namespace Labs
 
         public static Bitmap OtsuHierarchy(Bitmap image, int minSize)
         {
-            Bitmap bmp1, bmp2;
-            bool byWidth;
-            divideImage(image, out bmp1, out bmp2, out byWidth);
+            Bitmap bmp = new Bitmap(image);
+            Color c1 = Color.Black, c2 = Color.White;
 
-            if (bmp1.Width <= minSize || bmp1.Height <= minSize)
+            List<int> listT = new List<int>();
+            var cnt = image.Width * image.Height;
+            var hist = getGrayscaleHist(image);
+            double[] normedHist = new double[256];
+            for (int i = 0; i < 256; ++i)
             {
-                bmp1 = OtsuGlobal(bmp1);
-            } else
-            {
-                bmp1 = OtsuHierarchy(bmp1, minSize);
+                normedHist[i] = hist[i] * 1.0 / cnt;
             }
-            if (bmp2.Width <= minSize || bmp2.Height <= minSize)
+            OtsuRecursive(normedHist, listT, minSize);
+            listT = listT.OrderBy(x => x).ToList();
+
+            for (int x = 0; x < bmp.Width; ++x)
             {
-                bmp2 = OtsuGlobal(bmp2);
-            }
-            else
-            {
-                bmp2 = OtsuHierarchy(bmp2, minSize);
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var pixel = bmp.GetPixel(x, y);
+                    var first = listT.FindIndex(c => c > pixel.R);
+                    if (first % 2 == 0)
+                    {
+                        bmp.SetPixel(x, y, c1);
+                    } else
+                    {
+                        bmp.SetPixel(x, y, c2);
+                    }
+                }
             }
 
-            Bitmap bmp = combineImages(bmp1, bmp2, byWidth);
             return bmp;
         }
 
-        //public static Bitmap OtsuHierarchy(Bitmap image, int minSize)
-        //{
-        //    Bitmap bmp = new Bitmap(image);
-        //    return bmp;
-        //}
+        private static void OtsuRecursive(double[] hist, List<int> listT, int minSize)
+        {
+            if (minSize == 0 || hist.Length < 3) return;
+
+            double q = hist[0];
+            double m1 = 0, m2 = 0;
+            double n = 0, m = 0;
+            for (int i = 0; i < hist.Length; ++i)
+            {
+                n += hist[i];
+                m += hist[i] * i;
+            }
+            m /= n;
+
+            int t = 0;
+            double maxSigma = 0;
+            for (int i = 0; i < hist.Length; ++i)
+            {
+                m1 = q * m1 + i * hist[i];
+                q += hist[i];
+                if (Math.Abs(q) < 0.0001 || Math.Abs(q - 1) < 0.0001) continue;
+                m1 /= q;
+                m2 = (m - q * m1) / (1 - q);
+                double d = Math.Sqrt(q * (1 - q) * (m1 - m2) * (m1 - m2));
+                if (d > maxSigma)
+                {
+                    maxSigma = d;
+                    t = i;
+                }
+            }
+            listT.Add(t);
+
+            if (t > 0)
+            {
+                double[] hist1 = new double[t];
+                for (int i = 0; i < t; ++i)
+                    hist1[i] = hist[i];
+                OtsuRecursive(hist1, listT, minSize - 1);
+
+                double[] hist2 = new double[hist.Length - t];
+                for (int i = t; i < hist.Length; ++i)
+                    hist2[i - t] = hist[i];
+                OtsuRecursive(hist2, listT, minSize - 1);
+            }
+           
+        }
     }
 }
