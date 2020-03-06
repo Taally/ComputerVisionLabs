@@ -11,6 +11,28 @@ namespace Lab3
     {
         const string hole_ring = "hole_ring";
         const string hole_mask = "hole_mask";
+        const string gear_body = "gear_body";
+        const string tip_spacing = "tip_spacing";
+        const string defect_cue = "defect_cue";
+
+
+
+        const string hole_ring1 = "hole_ring1";
+        const string hole_ring_rev = "hole_ring_rev";
+        const string hole_ring1_rev = "hole_ring1_rev";
+
+
+        public static int[,] GetMaskArray(Bitmap bmp)
+        {
+            var dst = new int[bmp.Width, bmp.Height];
+            for (int x = 0; x < bmp.Width; ++x)
+                for (int y = 0; y < bmp.Height; ++y)
+                {
+                    var c = bmp.GetPixel(x, y);
+                    dst[x, y] = c.R / 255 >= 0.5 ? 1 : 0;
+                }
+            return dst;
+        }
 
         public static int[,] GetArray(Bitmap bmp)
         {
@@ -18,7 +40,8 @@ namespace Lab3
             for (int x = 0; x < bmp.Width; ++x) 
                 for (int y = 0; y < bmp.Height; ++y)
                 {
-                    dst[x, y] = bmp.GetPixel(x, y).R;
+                    var c = bmp.GetPixel(x, y);
+                    dst[x, y] = bmp.GetPixel(x, y).R / 255 >= 0.5 ? 1 : 0;
                 }
             return dst;
         }
@@ -29,45 +52,108 @@ namespace Lab3
             for (int x = 0; x < bmp.Width; ++x)
                 for (int y = 0; y < bmp.Height; ++y)
                 {
-                    var c = Math.Min(arr[x, y], 255);
+                    var c = Math.Min(arr[x, y] * 255, 255);
                     bmp.SetPixel(x, y, Color.FromArgb(c, c, c));
                 }
             return bmp;
         }
 
-        public static Bitmap Test(Bitmap image)
+        public static int[,] Step1(int[,] arr)
         {
-            var arr = GetArray(image);
-
-            /*int[,] mask = new int[,]
-            {
-                {1, 1, 1},
-                {1, 1, 1},
-                {1, 1, 1}
-            };*/
             var mask = LoadMask(hole_ring);
             var res = Erosion(arr, mask);
-            //Console.WriteLine("Res");
-            //PrintArr(res);
-            return GetBitmap(res);
-            //return image;
+            return res;
         }
 
-        public static Bitmap Test1(Bitmap image)
+        public static int[,] Step2(int[,] arr)
         {
-            var arr = GetArray(image);
-            /*int[,] mask = new int[,]
-            {
-                {1, 1, 1},
-                {1, 1, 1},
-                {1, 1, 1}
-            };*/
-            var mask1 = LoadMask(hole_ring);
-            var res = Erosion(arr, mask1);
-            var mask2 = LoadMask(hole_mask);
-            res = Dilation(res, mask2);
+            var mask = LoadMask(hole_mask);
+            var res = Dilation(arr, mask);
+            return res;
+        }
 
-            return GetBitmap(res);
+        // B3 = B OR B2
+        public static int[,] Step3(int [,] arr1, int[,] arr2)
+        {
+            return Or(arr1, arr2);
+        }
+
+        public static int[,] Or(int[,] arr1, int[,] arr2)
+        {
+            int w = arr1.GetLength(0);
+            int h = arr1.GetLength(1);
+
+            int[,] dst = new int[w, h];
+            for (int x = 0; x < w; ++x)
+                for (int y = 0; y < h; ++y)
+                {
+                    var res = 0;
+                    if (arr1[x, y] == 1 || arr2[x, y] == 1)
+                    {
+                        res = 1;
+                    }
+                    dst[x, y] = res;
+                }
+            return dst;
+        }
+
+        // B8 = B AND B7
+        public static int[,] Step4(int[,] arr)
+        {
+            var mask = LoadMask(gear_body);
+            return And(arr, mask);
+        }
+
+        public static int[,] And(int[,] arr1, int[,] arr2)
+        {
+            int w = arr1.GetLength(0);
+            int h = arr1.GetLength(1);
+
+            int[,] dst = new int[w, h];
+            for (int x = 0; x < w; ++x)
+                for (int y = 0; y < h; ++y)
+                {
+                    var res = 0;
+                    if (arr1[x, y] == 1 && arr2[x, y] == 1)
+                    {
+                        res = 1;
+                    }
+                    dst[x, y] = res;
+                }
+            return dst;
+        }
+
+        // B9 = B8 (+) tip_spacing
+        public static int[,] Step5(int[,] arr)
+        {
+            var mask = LoadMask(tip_spacing);
+            var res = Dilation(arr, mask);
+            return res;
+        }
+
+        // result = ((B7-B9) (+) defect_cue) OR B9
+        public static int[,] Step6(int[,] B9)
+        {
+            var B7 = LoadMask(gear_body);
+            var mask = LoadMask(defect_cue);
+            var res = Subtract(B7, B9);
+            res = Dilation(res, mask);
+            res = Or(res, B9);
+            return res;
+        }
+
+        public static int[,] Subtract(int[,] arr1, int[,] arr2)
+        {
+            int w = arr1.GetLength(0);
+            int h = arr1.GetLength(1);
+
+            int[,] dst = new int[w, h];
+            for (int x = 0; x < w; ++x)
+                for (int y = 0; y < h; ++y)
+                {
+                    dst[x, y] = arr1[x,y] - arr2[x,y];
+                }
+            return dst;
         }
 
         public static void PrintArr(int[,] arr)
@@ -150,7 +236,7 @@ namespace Lab3
 
             var imagePath = System.IO.Path.Combine(path.ToString(), name + ".png");
             var bmp = new Bitmap(Bitmap.FromFile(imagePath));
-            var mask = GetArray(bmp);
+            var mask = GetMaskArray(bmp);
             return mask;
         }
     }

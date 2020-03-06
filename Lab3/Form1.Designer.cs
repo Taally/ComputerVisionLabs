@@ -35,9 +35,9 @@
             this.buttonRes = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.buttonB3 = new System.Windows.Forms.Button();
-            this.buttonB7 = new System.Windows.Forms.Button();
             this.buttonB8 = new System.Windows.Forms.Button();
             this.buttonB9 = new System.Windows.Forms.Button();
+            this.buttonB7 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOrig)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResult)).BeginInit();
             this.SuspendLayout();
@@ -88,6 +88,7 @@
             this.buttonRes.TabIndex = 4;
             this.buttonRes.Text = "Result";
             this.buttonRes.UseVisualStyleBackColor = true;
+            this.buttonRes.Click += new System.EventHandler(this.buttonRes_Click);
             // 
             // openFileDialog1
             // 
@@ -101,15 +102,7 @@
             this.buttonB3.TabIndex = 5;
             this.buttonB3.Text = "B or B2 (B3)";
             this.buttonB3.UseVisualStyleBackColor = true;
-            // 
-            // buttonB7
-            // 
-            this.buttonB7.Location = new System.Drawing.Point(12, 377);
-            this.buttonB7.Name = "buttonB7";
-            this.buttonB7.Size = new System.Drawing.Size(75, 35);
-            this.buttonB7.TabIndex = 6;
-            this.buttonB7.Text = "B7";
-            this.buttonB7.UseVisualStyleBackColor = true;
+            this.buttonB3.Click += new System.EventHandler(this.buttonB3_Click);
             // 
             // buttonB8
             // 
@@ -119,6 +112,7 @@
             this.buttonB8.TabIndex = 7;
             this.buttonB8.Text = "B8";
             this.buttonB8.UseVisualStyleBackColor = true;
+            this.buttonB8.Click += new System.EventHandler(this.buttonB8_Click);
             // 
             // buttonB9
             // 
@@ -128,6 +122,17 @@
             this.buttonB9.TabIndex = 8;
             this.buttonB9.Text = "B9";
             this.buttonB9.UseVisualStyleBackColor = true;
+            this.buttonB9.Click += new System.EventHandler(this.buttonB9_Click);
+            // 
+            // buttonB7
+            // 
+            this.buttonB7.Location = new System.Drawing.Point(12, 377);
+            this.buttonB7.Name = "buttonB7";
+            this.buttonB7.Size = new System.Drawing.Size(75, 35);
+            this.buttonB7.TabIndex = 6;
+            this.buttonB7.Text = "B7";
+            this.buttonB7.UseVisualStyleBackColor = true;
+            this.buttonB7.Click += new System.EventHandler(this.buttonB7_Click);
             // 
             // Form1
             // 
@@ -160,9 +165,9 @@
         private System.Windows.Forms.Button buttonRes;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button buttonB3;
-        private System.Windows.Forms.Button buttonB7;
         private System.Windows.Forms.Button buttonB8;
         private System.Windows.Forms.Button buttonB9;
+        private System.Windows.Forms.Button buttonB7;
     }
 }
 
